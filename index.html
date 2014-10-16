@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <style type="text/css">
+        html, body, #map-canvas { height: 98.5%; margin: 0; padding: 0; }
+    </style>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key="></script>
+    <script type="text/javascript">
+        var map, geocoder, marker, area;
+        function initialize() {
+            var mapOptions = {
+                scaleControl: true,
+                zoom: 14
+            };
+
+            map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+
+            geocoder = new google.maps.Geocoder();
+            geocoder.geocode(
+                    { address: '東京駅' },
+                    function (geoResult, geoStatus) {
+                        if (geoStatus == google.maps.GeocoderStatus.OK) {
+                            map.setCenter(geoResult[0].geometry.location);
+                            marker = new google.maps.Marker({
+                                    map: map,
+                                    position: geoResult[0].geometry.location
+                                });
+                            var radiusDistance = 2000; // 2km setting
+                            var areaCircle = {
+                                strokeColor: '#FF00FF',
+                                strokeOpacity: 0.8,
+                                strokeWeight: 2,
+                                fillColor: '#AA00FF',
+                                fillOpacity: 0.35,
+                                map: map,
+                                center: geoResult[0].geometry.location,
+                                radius: radiusDistance
+                            };
+
+                            area = new google.maps.Circle(areaCircle);
+                        }
+                    }
+            );
+
+            google.maps.event.addListener(map, 'click', function(mouse) {
+                clearArea();
+                map.setCenter(mouse.latLng);
+                marker = new google.maps.Marker({
+                        map: map,
+                        position: mouse.latLng
+                    });
+                var radiusDistance = 2000; // 2km setting
+                var areaCircle = {
+                    strokeColor: '#FF00FF',
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    fillColor: '#AA00FF',
+                    fillOpacity: 0.35,
+                    map: map,
+                    center: mouse.latLng,
+                    radius: radiusDistance
+                };
+
+                area = new google.maps.Circle(areaCircle);
+            });
+        }
+
+        function showInputArea() {
+            var input_address = document.addressForm.address.value;
+
+            clearArea()
+            geocoder.geocode(
+                    { address: input_address },
+                    function (geoResult, geoStatus) {
+                        if (geoStatus == google.maps.GeocoderStatus.OK) {
+                            map.setCenter(geoResult[0].geometry.location);
+                            marker = new google.maps.Marker({
+                                    map: map,
+                                    position: geoResult[0].geometry.location
+                                });
+                            var radiusDistance = 2000; // 2km setting
+                            var areaCircle = {
+                                strokeColor: '#FF00FF',
+                                strokeOpacity: 0.8,
+                                strokeWeight: 2,
+                                fillColor: '#AA00FF',
+                                fillOpacity: 0.35,
+                                map: map,
+                                center: geoResult[0].geometry.location,
+                                radius: radiusDistance
+                            };
+
+                            area = new google.maps.Circle(areaCircle);
+                        }
+                    }
+            );
+        }
+
+        function clearArea() {
+            marker.setMap(null);
+            area.setMap(null);
+        }
+
+        google.maps.event.addDomListener(window, 'load', initialize);
+    </script>
+</head>
+<body>
+    <form name="addressForm">
+        <input type="text" name="address">
+        <input type="button" onclick="showInputArea()" value="submit">
+        <input type="button" onclick="clearArea()" value="clear marker">
+    </form>
+    <div id="map-canvas"></div>
+</body>
+</html>
